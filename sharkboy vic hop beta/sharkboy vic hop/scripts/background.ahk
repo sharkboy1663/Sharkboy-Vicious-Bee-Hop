@@ -1,14 +1,14 @@
-﻿#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0
 #SingleInstance Force
 
-global settingsPath := A_ScriptDir "\..\config.ini"  
-
+global settingsPath := A_ScriptDir "\..\config.ini"
 #Include "..\scripts\webhook.ahk"
 #Include "..\lib\Gdip_all.ahk"
 #Include "..\lib\Gdip_ImageSearch.ahk"
 #Include "..\lib\Roblox.ahk"
 #Include "..\img\bitmaps.ahk"
 
+global lastState := false
 
 DetectDeath() {
     GetRobloxClientPos()
@@ -18,22 +18,19 @@ DetectDeath() {
     return result
 }
 
-monitorPlayerDeath() {
-    if DetectDeath() {
+loop {
+    currentState := DetectDeath()
+    
+    if (currentState && !lastState) {
         sendwebhook("You died", true)
         PostMessage(0x1003, 0, 0,, "Sharkboy Vic Hop")
-        sleep(2500)
-        return true
+        Sleep(2500)
     }
-    return false
-}
-
-SetTimer(monitorPlayerDeath, 500)
-
-loop {
+    
+    lastState := currentState
+    
     if !WinExist("Sharkboy Vic Hop")
         ExitApp()
+        
     Sleep(500)
 }
-
-
