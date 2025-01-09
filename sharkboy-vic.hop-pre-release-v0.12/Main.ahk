@@ -1,5 +1,5 @@
 ﻿#Requires AutoHotkey v2.0
-
+checkUpdate()
 
 TraySetIcon(A_scriptdir "\img\sharkboyvichop.png")
 setworkingdir(A_scriptdir)
