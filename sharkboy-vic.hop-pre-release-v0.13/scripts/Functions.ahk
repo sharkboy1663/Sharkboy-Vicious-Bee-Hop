@@ -378,7 +378,7 @@ class server extends Socket.Server {
 }
 
 checkUpdate() {
-    global CurrentVersion := "0.12"
+    global CurrentVersion := "0.13"
     
     whr := ComObject("WinHttp.WinHttpRequest.5.1")
     whr.Open("GET", "https://api.github.com/repos/sharkboy1663/Sharkboy-Vicious-Bee-Hop/releases", true)
