@@ -32,7 +32,6 @@ sendWebhook("Connected to Discord")
 
 guiColor := IniRead(settingsPath, "Settings", "GuiColor", "0xFFFFFF")
 
-
 mainGui := Gui(, "Sharkboy Vic Hop")
 mainGui.BackColor := "0x1a1a1a"  
 mainGui.SetFont("s12 bold", "Segoe UI")
@@ -59,14 +58,18 @@ mainGui.Add("Button", "c0xFFFFFF Background" guiColor " x240 y25 w100 h30", "Sav
 mainGui.Add("Button", "c0xFFFFFF Background" guiColor " x20 y222 w100 h25", "Planters").onEvent("click", plantersButton)
 
 mainGui.Add("Text", "c" guiColor " x130 y225", "GUI Color:")
-colorEdit := mainGui.Add("Edit", "x200 y222 w100 h25")
+colorEdit := mainGui.Add("Edit", "x200 y222 w60 h25")
 colorEdit.Text := guiColor
-mainGui.Add("Button", "c0xFFFFFF Background" guiColor " x310 y222 w30 h25", "✓").OnEvent("Click", updateColor)
+mainGui.Add("Button", "c0xFFFFFF Background" guiColor " x265 y222 w25 h25", "✓").OnEvent("Click", updateColor)
+
+githubPic := mainGui.Add("Picture", "x295 y222 w25 h25", "img\github.png")
+discordPic := mainGui.Add("Picture", "x325 y222 w25 h25", "img\discord.png")
+
+githubPic.OnEvent("Click", (*) => Run("https://github.com/sharkboy1663/Sharkboy-Vicious-Bee-Hop"))
+discordPic.OnEvent("Click", (*) => Run("https://discord.gg/hK2bHhGvuK"))
 
 mainGui.Show("w360 h265")
 mainGui.OnEvent("Close", (*) => ExitApp())
-
-
 
 updateColor(*) {
     if (RegExMatch(colorEdit.Text, "^0x[0-9A-Fa-f]{6}$")) {
