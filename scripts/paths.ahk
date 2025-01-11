@@ -347,6 +347,7 @@ pepperToMountain() {
     Hypersleep(25)
     send "{" 'space' " up}"
     Hypersleep(500)
+    Move(2, "d")
     Move(10, "w")
     shiftLock()
     Hypersleep(25)
