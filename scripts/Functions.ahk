@@ -396,29 +396,33 @@ checkUpdate() {
                 if FileExist(settingsPath)
                     settings := FileRead(settingsPath)
                 
-                mainPath := A_MyDocuments "\sharkboy-vic-hop-" newVersion
-                tempPath := mainPath "\temp"
-                downloadPath := tempPath "\update.zip"
-                
-                DirCreate(tempPath)
-                Download("https://github.com/sharkboy1663/Sharkboy-Vicious-Bee-Hop/archive/refs/tags/v" newVersion ".zip", downloadPath)
-                RunWait('powershell -Command "Expand-Archive -Path `"' downloadPath '`" -DestinationPath `"' tempPath '`" -Force"')
-                
-                ; Move contents up and clean up
-                sourcePath := tempPath "\Sharkboy-Vicious-Bee-Hop-" newVersion
-                macroPath := mainPath "\Sharkboy-Vicious-Bee-Hop-" newVersion
-                DirMove(sourcePath, macroPath)
-                DirDelete(tempPath, 1)
-                
-                if IsSet(settings)
-                    FileAppend(settings, macroPath "\config.ini")
-                
-                MsgBox("Updated! New version in Documents\sharkboy-vic-hop-" newVersion)
-                ExitApp
+                ; Let user choose the download location
+                selectedPath := DirSelect("", 3, "Choose where to install v" newVersion)
+                if selectedPath {
+                    mainPath := selectedPath "\sharkboy-vic-hop-" newVersion
+                    tempPath := mainPath "\temp"
+                    downloadPath := tempPath "\update.zip"
+                    
+                    DirCreate(tempPath)
+                    Download("https://github.com/sharkboy1663/Sharkboy-Vicious-Bee-Hop/archive/refs/tags/v" newVersion ".zip", downloadPath)
+                    RunWait('powershell -Command "Expand-Archive -Path `"' downloadPath '`" -DestinationPath `"' tempPath '`" -Force"')
+                    
+                    sourcePath := tempPath "\Sharkboy-Vicious-Bee-Hop-" newVersion
+                    macroPath := mainPath "\Sharkboy-Vicious-Bee-Hop-" newVersion
+                    DirMove(sourcePath, macroPath)
+                    DirDelete(tempPath, 1)
+                    
+                    if IsSet(settings)
+                        FileAppend(settings, macroPath "\config.ini")
+                    
+                    MsgBox("Updated! New version installed in:`n" mainPath)
+                    ExitApp
+                }
             }
         }
     }
 }
+
 
 
 onMessage(0x1003, deathDetected)
