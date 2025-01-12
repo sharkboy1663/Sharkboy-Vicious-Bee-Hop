@@ -400,7 +400,7 @@ class server extends Socket.Server {
 }
 
 checkUpdate() {
-    global CurrentVersion := "0.13"
+    global CurrentVersion := "0.14"
     settingsPath := A_ScriptDir "\config.ini"
     
     whr := ComObject("WinHttp.WinHttpRequest.5.1")
