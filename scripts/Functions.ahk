@@ -1,55 +1,75 @@
 GetServer(amount:=1, cursor?) {
     static lastServers := [], serverListLength := 20
     server := []
+    
     Whr := ComObject("WinHTTP.WinHTTPRequest.5.1")
     Whr.open("GET", "https://games.roblox.com/v1/games/1537690962/servers/0?sortOrder=1&excludeFullGames=true&limit=100" (IsSet(cursor) ? "&cursor=" cursor : ""), true)
+    
     Whr.send()
     try 
         Whr.WaitForResponse()
     catch
         return [0]
+        
     obj := JSON.parse(Whr.responsetext, true, false)
     if !IsObject(obj) || !obj.HasProp('data')
         return [0]
+        
     for i in obj.data {
         for j in lastServers
             if j = i.id
                 continue 2
+                
         lastServers.InsertAt(1, i.id)
         server.Push(i.id)
         if server.Length = amount
             return server
     }
+    
     return [0,obj.nextpagecursor]
 }
+
+
 Run(A_ScriptDir "\scripts\Background.ahk")
+
 global serversJoined := 0
 global nightservers := 0
 
 joinRoblox() {
-    leaveGame()
-    sleep(1000)
-    servers := GetServer(5)
-    if servers[1] = 0 && servers.Length >=2 
-        servers := GetServer(5, servers[2])
-    else 
-        servers := GetServer(5)  
-    serverID := servers[Random(1, servers.Length)]
+    CloseRoblox()
+    sleep(1000)  
+    
+    static serverList := []
+    
+    if !serverList.Length {
+        servers := GetServer(5)
+        if servers[1] = 0 && servers.Length >=2 
+            servers := GetServer(5, servers[2])
+        else 
+            servers := GetServer(5)  
+        serverList := servers
+    }
+    
+    serverID := serverList.Pop()
     Run("roblox://placeId=1537690962&gameInstanceId=" serverID)
+    sleep(3000)  
 }
 
+    
 
 loadRoblox() {
     joinRoblox()
-    loop 25 {
+    loop 20 {  
         if BSSActive() {
             return true
         }
-        else if A_index = 25
+        else if A_index = 20
            return false 
         sleep(1000)
     }
 }
+
+
 
 joinAndCheckNight() {
     global serversJoined
@@ -102,18 +122,18 @@ CheckNight(hwnd?){
 
 
 
-leaveGame() {
-    hwnd := GetRobloxHWND()
-    if WinExist(hwnd) && BSSActive() {
-        send "{Esc}"
-        sleep(50)
-        send "{L}"
-        sleep(50)
-        send "{Enter}"
-        sleep(100)
 
-        ProcessClose("RobloxPlayerBeta.exe")
-        ProcessWaitClose("RobloxPlayerBeta.exe", 2)
+CloseRoblox() {
+    if (hwnd := GetRobloxHWND()) {
+        GetRobloxClientPos(hwnd)
+        ActivateRoblox()
+        SetKeyDelay(75)
+        send("{esc}{l}{enter}")
+        SetKeyDelay(0)
+    }
+    for p in ComObjGet("winmgmts:").ExecQuery("SELECT * FROM Win32_Process WHERE Name LIKE '%Roblox%' OR CommandLine LIKE '%ROBLOXCORPORATION%'") {
+        if !(InStr(p.Name, "Manager"))
+            ProcessClose p.ProcessID
     }
 }
 
